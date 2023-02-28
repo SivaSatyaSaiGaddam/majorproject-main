@@ -1,5 +1,9 @@
 {% extends 'navbar.html' %}
 {% block content %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>user named {{user.name}} is added successfully</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 <script>
 
     document.getElementsByClassName("nav-link")[0].className="nav-link active"
@@ -7,6 +11,7 @@
     body.style="background-image:url('/static/home_image.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;"
     localStorage.setItem("1","me")
 </script>
+
 <br>
 <br>
 
@@ -16,23 +21,17 @@
 <br>
 <div class="container">
     <div class="row">
-        <div class="col-lg-4 col-md-12">
-            <h1>New Student?</h1>
+        <div class="col-lg-6 col-md-12">
+            <h1>Go to Home</h1>
+            <br>
+            <br>
+            <button type="button" class="btn btn-lg btn-success"><a href="{% url 'home' %}">Register here</a></button>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <h1>Register again</h1>
             <br>
             <br>
             <button type="button" class="btn btn-lg btn-success"><a href="{% url 'register' %}">Register here</a></button>
-        </div>
-        <div class="col-lg-4 col-md-12">
-            <h1>To Take Attendnace</h1>
-            <br>
-            <br>
-            <button type="button" class="btn btn-lg btn-success"><a href="{% url 'attendance' %}">click here</a></button>
-        </div>
-        <div class="col-lg-4 col-md-12">
-            <h1>To check Attendance</h1>
-            <br>
-            <br>
-            <button type="button" class="btn btn-lg btn-success"><a href="{% url 'attendance' %}">click here</a></button>
         </div>
     </div>
 </div>

@@ -1,6 +1,55 @@
 {% extends 'navbar.html' %}
 {% block content %}
-<script>
+
+<br>
+<br>
+
+<h1 style="text-align:center;">STUDENT DETAILS</h1>
+<br>
+<br>
+<form id="my-form" style="padding-left: 20%;padding-right: 20%;">
+  {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label" style="font-weight: 600;" >Name</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="Enter Full Name Here" required>
+    </div>
+    <div class="mb-3">
+      <label for="rollno" class="form-label" style="font-weight: 600;">rollno</label>
+      <input type="text" class="form-control" id="rollno" name="rollno" placeholder="Enter Roll Number" required>
+    </div>
+    <div class="mb-3">
+        <label for="section" class="form-label" style="font-weight: 600;">Section</label>
+        <input type="text" class="form-control" id="section" name="section" placeholder="Enter Section" required>
+      </div>
+    <div class="mb-3">
+        <label for="email" class="form-label" style="font-weight: 600;">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Personal Email" required>
+      </div>
+      <div class="mb-3">
+        <label for="number" class="form-label" style="font-weight: 600;">Mobile Number</label>
+        <input type="number" class="form-control" id="number" name="number" placeholder="Enter Personal Mobile Number" required>
+      </div>
+    
+
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    </div>
+    
+    <button type="submit" class="btn btn-primary" onclick="save_form_data()"><a href="{% url 'registerface' %}">Submit</a></button>
+  </form>
+  <script>
     document.getElementsByClassName("nav-link")[1].className="nav-link active"
+    document.querySelector("title").innerHTML="register"
+    var body=document.querySelector("body")
+    body.style="background-image:url('/static/register_image.jpg');background-repeat: no-repeat;background-attachment: fixed;background-size: cover;"
 </script>
+<script>
+  function save_form_data(){
+    localStorage.setItem('1',JSON.stringify([document.getElementById('name').value,document.getElementById('rollno').value,document.getElementById('section').value,document.getElementById('email').value,document.getElementById('number').value]))
+    
+  }
+</script>
+
+
 {% endblock %}
