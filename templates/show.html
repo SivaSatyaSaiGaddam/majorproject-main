@@ -4,4 +4,122 @@
     document.getElementsByClassName("nav-link")[3].className="nav-link active"
     document.querySelector("title").innerHTML="show"
 </script>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="sections" onchange="change_sections()">
+        <option value="default" selected>default</option>
+        {% for i in section %}
+        <option value="{{i.section}}">{{i.section}}</option>
+        {% endfor %}
+      </select>
+      
+    </div>
+
+    <div class="col-md-4">
+      <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="status" onchange="change_status()">
+        <option value="p" selected>Presentees</option>
+        <option value="a">Absentees</option>
+      </select>
+      
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary" onclick="read_absentees()">
+        Read the Absentees
+      </button>
+    </div>
+
+    <div class="col-sm-10">
+      <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">name</th>
+          <th scope="col">rollno</th>
+          <th scope="col">time in</th>
+          <th scope="col">time out</th>
+          <th scope="col">date</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+          {% for i in attendance %}
+              <tr>
+                  <td>{{i.rollno.name}}</th>
+                  <td>{{i.rollno.rollno}}</td>
+                  <td>{{i.time_in}}</td>
+                  <td>{{i.time_out}}</td>
+                  <td>{{i.date}}</td>
+              </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  </div>
+</div>
+
+  <script>
+      var s=document.getElementById("sections")
+      function change_sections()
+      {
+        var s=document.getElementById("sections")
+        let tbody=document.getElementById("tbody");
+        tbody.innerHTML="";
+        if(s.value=="default")
+        {
+          {% for i in attendance %}
+            var tr=document.createElement("tr")
+            var td=document.createElement("td")
+            td.innerHTML="{{i.rollno.name}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.rollno.rollno}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.time_in}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.time_out}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.date}}"
+            tr.appendChild(td)
+            tbody.appendChild(tr)
+          {% endfor %}
+        }
+        else{
+          
+        {% for i in attendance %}
+          if(s.value=="{{i.rollno.section}}")
+          {
+            var tr=document.createElement("tr")
+            var td=document.createElement("td")
+            td.innerHTML="{{i.rollno.name}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.rollno.rollno}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.time_in}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.time_out}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.date}}"
+            tr.appendChild(td)
+            tbody.appendChild(tr)
+          }
+        {% endfor %}
+      }
+    }
+    function change_status(){
+      let status=document.getElementById("status")
+      let section=document.getElementById("sections")
+      if(status.value=="p"){
+       change_sections()
+      }
+      
+      
+      
+    }
+  </script>
 {% endblock %}

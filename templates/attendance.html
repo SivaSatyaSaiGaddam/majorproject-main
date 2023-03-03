@@ -1,7 +1,57 @@
 {% extends 'navbar.html' %}
 {% block content %}
+
 <script>
     document.getElementsByClassName("nav-link")[2].className="nav-link active"
     document.querySelector("title").innerHTML="attendance"
 </script>
+{% if captured %}
+    {% if not detected %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>faces are not detected</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% else %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <strong>faces are detected</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+{% endif %}
+    <video id="webcam" width=1280 height=720 autoplay></video>
+    <i class="fa fa-camera" style="font-size:48px;color:red;position:absolute;bottom:30px;left:640px;" id="icon" onclick="submit_form()"></i>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <form id="my-form"  action="{% url 'attendance' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="image-data" name="image-data">
+    </form>
+    
+    <ul class="list-group">
+        {% for i in list %}
+        <li class="list-group-item">{{i}}</li>
+        {% endfor %}
+    </ul>
+    
+    <script>
+        var form = document.getElementById('my-form');
+        var icon= document.getElementById('icon');
+        function submit_form() {
+          event.preventDefault();
+          var videoElement = document.getElementById('webcam');
+          var canvas = document.getElementById('canvas');
+          canvas.width=1280
+          canvas.height=720
+          var context = canvas.getContext('2d');
+          context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+          url=canvas.toDataURL('image/jpeg')
+          document.getElementById('image-data').value=url
+          form.submit();
+        };
+  
+        navigator.mediaDevices.getUserMedia({video: true}).then(function(stream) {
+          var videoElement = document.getElementById('webcam');
+          videoElement.srcObject = stream;
+          videoElement.play();
+        });
+      </script>
 {% endblock %}

@@ -5,7 +5,13 @@
     document.getElementsByClassName("nav-link")[1].className="nav-link active"
     document.querySelector("title").innerHTML="register face"
 </script>
-{% if user.submit %}
+{% if user.exists %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>{{user.rollno}} already existes</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% elif user.submit %}
+
     {% if  user.saved %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
       <strong>user named {{user.name}} is added successfully</strong>
@@ -23,6 +29,7 @@
 {% endif %}
 
 <video id="webcam" width="1280" height="720" autoplay></video>
+<i class="fa fa-camera" style="font-size:48px;color:red;position:absolute;bottom:30px;left:640px;" id="icon" onclick="submit_details()"></i>
 <form id="my-form"  action="{% url 'registerface' %}" method="post">
     {% csrf_token %}
     <input type="hidden"  id="name" name="name">
@@ -31,12 +38,12 @@
     <input type="hidden"  id="email" name="email">
     <input type="hidden"  id="number" name="number">
     <input type="hidden" id="image-data" name="image-data">
-    <button type="submit" id="button" class="btn btn-primary" onclick="submit_details()">Submit</button>
   </form>
 <canvas id="canvas" style="display:none;"></canvas>
 <script>
     var form = document.getElementById('my-form');
     function submit_details(){
+        console.log(document.querySelector('input[name="csrfmiddlewaretoken"]').value)
         var videoElement = document.getElementById('webcam');
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
