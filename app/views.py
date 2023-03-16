@@ -43,15 +43,16 @@ def attendance(request):
                 
                 for face in Student.objects.all():
                     f=np.asarray(list(json.loads(face.encoding)),dtype=np.float64)
-                    print(f)
                     np.set_printoptions(precision=20)
                     m=face_recognition.compare_faces(known_face_encodings=[encoding],face_encoding_to_check=f,tolerance=0.4)
                     if m[0]:
                         now=datetime.now()
-                        a=Attendance.objects.filter(date=now.strftime("%Y-%m-%d")).get(rollno=face)
-                        if a:
-                            a.time_out=now.strftime("%H:%M:%S")
-                            a.save()
+                        a=Attendance.objects.filter(date=now.strftime("%Y-%m-%d")).filter(rollno=face)
+                        if bool(a):
+                            print(a)
+                            a[0].time_out=now.strftime("%H:%M:%S")
+                            a[0].save()
+                            
                         else:
                             Attendance.objects.create(rollno=face,time_in=now.strftime("%H:%M:%S"),time_out=now.strftime("%H:%M:%S"),date=now.strftime("%Y-%m-%d"))
 
@@ -61,8 +62,8 @@ def attendance(request):
             return render(request,'attendance.html',{'list':arr,'detected':True,'captured':True})
         
         else:
-            return render(request,'attendance.html',{'detected':False,'captured':True})
-    return render(request,'attendance.html',{'captured':False,'detected':False,'attendance':arr})
+            return render(request,'attendance.html',{'detected':False,'captured':True,'list':arr})
+    return render(request,'attendance.html',{'captured':False,'detected':False,'list':arr})
     
 
 def show(request):
@@ -71,7 +72,7 @@ def show(request):
     for i in attended:
         a.add(i.rollno.rollno)
     absent_students = Student.objects.exclude(rollno__in=a)
-    print(absent_students)
+    print(absent_students,attended)
     return render(request,"show.html",{'attendance':attended,"section":Section.objects.all(),"absentees":absent_students})
 
 def registerface(request):
@@ -92,9 +93,9 @@ def registerface(request):
         cv_img = cv.imdecode(image, cv.IMREAD_COLOR)
         print(cv_img.shape)
         fr_img=cv.cvtColor(cv_img,cv.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(fr_img,number_of_times_to_upsample=2)
-        face_encoding=face_recognition.face_encodings(fr_img,face_locations,model="large",num_jitters=10)
-        flipped_cv_img=cv.flip(cv_img,1)
+        face_locations = face_recognition.face_locations(fr_img,number_of_times_to_upsample=1,model="hog")
+        face_encoding=face_recognition.face_encodings(fr_img,face_locations,model="large",num_jitters=1)
+
         if face_encoding:
             a=face_encoding[0]
             print(a)
@@ -104,7 +105,7 @@ def registerface(request):
             if rows.exists():
                 row = rows.first()
                 row.count=row.count+1
-                row.save
+                row.save()
             else:
                 Section.objects.create(section=request.POST['section'],count=1)
             return render(request,'user_added.html',{'user':user})

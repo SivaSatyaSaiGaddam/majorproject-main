@@ -4,33 +4,39 @@
     document.getElementsByClassName("nav-link")[3].className="nav-link active"
     document.querySelector("title").innerHTML="show"
 </script>
+<br>
+<br>
 <div class="container">
   <div class="row">
-    <div class="col-md-4">
-      <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="sections" onchange="change_sections()">
-        <option value="default" selected>default</option>
-        {% for i in section %}
-        <option value="{{i.section}}">{{i.section}}</option>
-        {% endfor %}
-      </select>
+    <div class="col-md-4 col-lg-4">
       
+      <select class="form-select form-select-sm" id="s" name="s" onchange="change_status()">
+        <option value="p">presentees</option>
+        <option value="a">absentees</option>
+      </select>
     </div>
 
-    <div class="col-md-4">
-      <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="status" onchange="change_status()">
-        <option value="p" selected>Presentees</option>
-        <option value="a">Absentees</option>
-      </select>
+    
+    <div class="col-md-4 col-lg-4">
       
+      <select class="form-select form-select-sm" id="section" name="section" onchange="change_sections()">
+        <option value="default">default</option>
+      </select>
     </div>
-    <div class="col-md-4">
-      <button class="btn btn-primary" onclick="read_absentees()">
-        Read the Absentees
+
+   
+    <div class="col-md-4 col-lg-4">
+      <button class="btn btn-primary btn-lg" onclick="read_absentees()">
+        Read Out Loud!
       </button>
     </div>
-
-    <div class="col-sm-10">
-      <table class="table">
+  </div>
+  <br>
+  <br>
+  <div class="row">
+    
+    <div class="col-sm-12 col-md-8">
+      <table class="table" style="color:white;">
       <thead>
         <tr>
           <th scope="col">name</th>
@@ -57,13 +63,24 @@
 </div>
 
   <script>
-      var s=document.getElementById("sections")
-      function change_sections()
+    var s=document.getElementById("s")
+    var section=document.getElementById("section")
+    var tbody=document.getElementById("tbody");
+    var d=new Date()
+    {% for i in section %}
+        var opt=document.createElement("option")
+        opt.innerHTML="{{i.section}}"
+        opt.value="{{i.section}}"
+        section.appendChild(opt)
+    {% endfor %}
+    console.log(s,section)
+    
+    function change_sections()
       {
-        var s=document.getElementById("sections")
-        let tbody=document.getElementById("tbody");
+        console.log(s.value)
         tbody.innerHTML="";
-        if(s.value=="default")
+        if(s.value=="p"){
+        if(section.value=="default")
         {
           {% for i in attendance %}
             var tr=document.createElement("tr")
@@ -88,7 +105,7 @@
         else{
           
         {% for i in attendance %}
-          if(s.value=="{{i.rollno.section}}")
+          if(section.value=="{{i.rollno.section}}")
           {
             var tr=document.createElement("tr")
             var td=document.createElement("td")
@@ -111,15 +128,118 @@
         {% endfor %}
       }
     }
-    function change_status(){
-      let status=document.getElementById("status")
-      let section=document.getElementById("sections")
-      if(status.value=="p"){
-       change_sections()
-      }
-      
-      
+    else{
+      change_status()
+    }
       
     }
+    function change_status(){
+      tbody.innerHTML="";
+      if(s.value=="p")
+      {
+        change_sections()
+       }
+       else{
+         if(section.value=="default"){
+          
+           {% for i in absentees %}
+           
+             var tr=document.createElement("tr")
+             var td=document.createElement("td")
+             td.innerHTML="{{i.name}}"
+             tr.appendChild(td)
+             var td=document.createElement("td")
+             td.innerHTML="{{i.rollno}}"
+             tr.appendChild(td)
+             var td=document.createElement("td")
+             td.innerHTML="absent"
+             tr.appendChild(td)
+             var td=document.createElement("td")
+             td.innerHTML="absent"
+             tr.appendChild(td)
+             var td=document.createElement("td")
+              td.innerHTML=d.toDateString()
+             tr.appendChild(td)
+             tbody.appendChild(tr)
+           {% endfor %}
+         }
+         else{
+          {% for i in absentees %}
+          if(section.value=="{{i.section}}")
+          {
+            var tr=document.createElement("tr")
+            var td=document.createElement("td")
+            td.innerHTML="{{i.name}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="{{i.rollno}}"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="Absent"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML="Absent"
+            tr.appendChild(td)
+            var td=document.createElement("td")
+            td.innerHTML=d.toDateString()
+            tr.appendChild(td)
+            tbody.appendChild(tr)
+          }
+           {% endfor %}
+
+         }
+       }
+    }
+    function read_absentees(){
+      if ('speechSynthesis' in window) {
+ // Speech Synthesis is supported 🎉
+ let txt=""
+ let utterance = new SpeechSynthesisUtterance();
+ tc=tbody.children
+ if(!tc.length){
+  return 
+ }
+
+ else
+ {
+  if(section.value!="default"){
+  txt+="in section  "+section.value
+ }
+ if(s.value=="p"){
+  txt+=" . present students are .. "
+ }
+else{
+  txt+=" . absent students are .. "
+}
+ for(let i of tc){
+  txt+=i.children[1].innerHTML+ " . "
+ }
+ console.log(txt)
+ utterance.text=txt
+speechSynthesis.speak(utterance);}
+
+}
+    }
+  </script>
+  {% load static %}
+
+<script src="{% static 'three.min.js' %}"></script>
+<script src="{% static 'vanta.net.min.js' %}"></script>
+<script>
+  VANTA.NET({
+    el: "#body",
+    mouseControls: true,
+    touchControls: true,
+    gyroControls: false,
+    minHeight: screen.height*(0.95),
+    minWidth:200,
+    scale: 1.00,
+    scaleMobile: 1.00,
+    color: 0x38ff70,
+    backgroundColor: 0x0,
+    points: 14.00,
+    maxDistance: 25.00,
+    spacing: 17.00
+  })
   </script>
 {% endblock %}
