@@ -30,10 +30,14 @@ def attendance(request):
         # convert the numpy array to a cv2 image
         cv_img = cv.imdecode(image, cv.IMREAD_COLOR)
         print(cv_img.shape)
+        width,height,size=cv_img.shape
+        reshaped_image=cv.resize(cv_img,(height//2,width//2))
+        print(reshaped_image.shape)
         fr_img=cv.cvtColor(cv_img,cv.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(fr_img,number_of_times_to_upsample=1,model="hog")
+        fr_reshaped=cv.cvtColor(reshaped_image,cv.COLOR_BGR2RGB)
+        face_locations = face_recognition.face_locations(fr_reshaped,number_of_times_to_upsample=1,model="hog")
         print(face_locations)
-        face_encoding=face_recognition.face_encodings(fr_img,face_locations,num_jitters=10,model="large")
+        face_encoding=face_recognition.face_encodings(fr_img,[(a*2,b*2,c*2,d*2) for a,b,c,d in face_locations],num_jitters=1,model="large")
         print(len(face_encoding))
         
         if face_encoding:
@@ -92,9 +96,15 @@ def registerface(request):
         # convert the numpy array to a cv2 image
         cv_img = cv.imdecode(image, cv.IMREAD_COLOR)
         print(cv_img.shape)
+        width,height,size=cv_img.shape
+        reshaped_image=cv.resize(cv_img,(height//2,width//2))
+        print(reshaped_image.shape)
         fr_img=cv.cvtColor(cv_img,cv.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(fr_img,number_of_times_to_upsample=1,model="hog")
-        face_encoding=face_recognition.face_encodings(fr_img,face_locations,model="large",num_jitters=1)
+        fr_reshaped=cv.cvtColor(reshaped_image,cv.COLOR_BGR2RGB)
+        face_locations = face_recognition.face_locations(fr_reshaped,number_of_times_to_upsample=1,model="hog")
+        print(face_locations)
+        face_encoding=face_recognition.face_encodings(fr_img,[(a*2,b*2,c*2,d*2) for a,b,c,d in face_locations],num_jitters=1,model="large")
+        print(len(face_encoding))
 
         if face_encoding:
             a=face_encoding[0]
